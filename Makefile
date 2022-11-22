@@ -27,12 +27,14 @@ create-project:
 start-d:
 	make prepare-nginx
 	@(cp ./${PROJECT_DIR_PATH}/.env.example.dist ./${PROJECT_DIR_PATH}/.env || true)
+	@make prepare-supervisord
 	@docker-compose build app
 	@docker-compose up -d
 	@docker-compose exec app composer install
 	@echo "Wait on setup database" && sleep 10
 	@docker-compose exec app php artisan migrate
 	@docker-compose exec app php artisan db:seed --class=DatabaseSeeder
+	@docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
 
 stop:
 	docker-compose down
@@ -62,3 +64,13 @@ destroy:
 prepare-nginx:
 	cp ./nginx/conf.d/app.stub ./nginx/conf.d/app.conf
 	@sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf
+
+prepare-supervisord:
+	set -ex;\
+		if [ ! -f './supervisord.conf' ]; then \
+			echo "Missing supervisord. Creating...";\
+			cp ./supervisord.stub ./supervisord.conf; \
+		fi;\
+
+	set +ex; \
+	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord.conf;

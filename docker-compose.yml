@@ -45,6 +45,8 @@ services:
       args:
         user: www
         uid: 1000
+        PHP_VERSION: ${PHP_VERSION}
+        PROJECT_DIR: ${PROJECT_DIR}
 #      context: ./${PROJECT_DIR_PATH}
       dockerfile: Dockerfile
       context: .

@@ -1,13 +1,19 @@
-FROM php:8.1-fpm
+ARG PHP_VERSION=8.1
+ARG NODE_VERSION=16
+
+FROM php:$PHP_VERSION-fpm
 
 # Arguments defined in docker-compose.yml
+ARG PROJECT_DIR
 ARG user
 ARG uid
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
+    supervisor \
     curl \
+    ca-certificates \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -15,6 +21,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     ffmpeg \
     screen
+
+#Install nodejs, npm
+#RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
+#    && apt-get install -y nodejs \
+#    && npm install -g npm \
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
@@ -32,6 +43,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
+
+COPY supervisord.conf /etc/supervisor/conf.d/laravel.conf
+
+#TOUCH '/var/www/${PROJECT_DIR}/storage/logs/worker.log'/
+
+#COPY php/local.ini /etc/php/$PHP_VERSION/cli/conf.d/php.ini
 
 # Set working directory
 WORKDIR /var/www
