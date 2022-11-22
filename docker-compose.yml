@@ -1,0 +1,96 @@
+version: "3.7"
+services:
+  db:
+    image: mysql:5.7
+    container_name: ${DOCKER_PREFIX}-db
+#    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysql/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
+    networks:
+      - app-network
+
+  mailhog:
+      image: mailhog/mailhog:latest
+      container_name: ${DOCKER_PREFIX}-mailhog
+      logging:
+          driver: none
+      ports:
+          - "8025:8025" #http port
+          - "1025:1025" #smtp port
+
+  nginx:
+    image: nginx:alpine
+    container_name: ${DOCKER_PREFIX}-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./${PROJECT_DIR_PATH}:/var/www/${PROJECT_DIR}
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  app:
+    build:
+      args:
+        user: www
+        uid: 1000
+#      context: ./${PROJECT_DIR_PATH}
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - db
+      - mailhog
+      - nginx
+    image: laravel-image
+    container_name: ${DOCKER_PREFIX}-app
+    restart: unless-stopped
+    working_dir: /var/www/${PROJECT_DIR}
+    environment:
+      APP_ENV: development
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: "true"
+      APP_NAME: ${APP_NAME}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_MAILER: smtp
+      MAIL_DRIVER: smtp
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_USERNAME: null
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null
+      MAIL_FROM_ADDRESS: null
+      MAIL_FROM_NAME: ""
+      SESSION_SECURE_COOKIE: "true"
+      SMTP_HOST: "smtp.mailtrap.io"
+      SMTP_PORT: "465"
+      SMTP_USE_AUTHENTICATION: "true"
+      SMTP_SECURE_TRANSPORT: "TLS"
+      SMTP_USERNAME: ${MAILTRAP_USERNAME}
+      SMTP_PASSWORD: ${MAILTRAP_PASSWORD}
+      SMTP_DEBUG: "false"
+      HOST_HOSTNAME: ${HOSTNAME}
+      VIRTUAL_HOST: "${PROJECT_DIR}.local"
+      VIRTUAL_PORT: 3000
+    volumes:
+      - ./${PROJECT_DIR_PATH}:/var/www/${PROJECT_DIR}
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
