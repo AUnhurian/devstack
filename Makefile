@@ -63,13 +63,19 @@ destroy:
 	@docker rmi $(docker images -q)
 
 prepare-nginx:
-	cp ./nginx/conf.d/app.stub ./nginx/conf.d/app.conf
-	@sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf
+	set -ex;\
+		if [ ! -f './nginx/conf.d/app.conf' ]; then \
+			echo "---> Missing nginx configuration. Creating...";\
+			cp ./nginx/conf.d/app.stub ./nginx/conf.d/app.conf; \
+		fi;\
+
+	set +ex; \
+	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf
 
 prepare-supervisord:
 	set -ex;\
 		if [ ! -f './supervisord/laravel.conf' ]; then \
-			echo "Missing supervisord. Creating...";\
+			echo "---> Missing supervisord. Creating...";\
 			cp ./supervisord/supervisord.stub ./supervisord/laravel.conf; \
 		fi;\
 
