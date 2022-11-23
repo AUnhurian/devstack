@@ -35,6 +35,7 @@ start-d:
 	@docker-compose exec app php artisan migrate
 	@docker-compose exec app php artisan db:seed --class=DatabaseSeeder
 	@docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
+	@docker-compose exec app php artisan queue:restart
 
 stop:
 	docker-compose down
@@ -67,10 +68,10 @@ prepare-nginx:
 
 prepare-supervisord:
 	set -ex;\
-		if [ ! -f './supervisord.conf' ]; then \
+		if [ ! -f './supervisord/laravel.conf' ]; then \
 			echo "Missing supervisord. Creating...";\
-			cp ./supervisord.stub ./supervisord.conf; \
+			cp ./supervisord/supervisord.stub ./supervisord/laravel.conf; \
 		fi;\
 
 	set +ex; \
-	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord.conf;
+	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord/laravel.conf;

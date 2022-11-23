@@ -44,12 +44,6 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
-COPY supervisord.conf /etc/supervisor/conf.d/laravel.conf
-
-#TOUCH '/var/www/${PROJECT_DIR}/storage/logs/worker.log'/
-
-#COPY php/local.ini /etc/php/$PHP_VERSION/cli/conf.d/php.ini
-
 # Set working directory
 WORKDIR /var/www
 

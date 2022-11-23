@@ -2,3 +2,4 @@ nginx/conf.d/app.conf
 .env
 .idea
 /supervisord.conf
+/supervisord/

@@ -88,6 +88,7 @@ services:
       VIRTUAL_PORT: 3000
     volumes:
       - ./${PROJECT_DIR_PATH}:/var/www/${PROJECT_DIR}
+      - ./supervisord:/etc/supervisor/conf.d/
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     networks:
