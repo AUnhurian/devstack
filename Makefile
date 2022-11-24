@@ -11,6 +11,7 @@ test:
 
 setup:
 	make create-project
+	@make start-d
 
 create-project:
 	set -ex;\
@@ -26,7 +27,7 @@ create-project:
 
 start-d:
 	make prepare-nginx
-	@(cp ./${PROJECT_DIR_PATH}/.env.example.dist ./${PROJECT_DIR_PATH}/.env || true)
+	@(cp ./${PROJECT_DIR_PATH}/.env.example ./${PROJECT_DIR_PATH}/.env || true)
 	@make prepare-supervisord
 	@docker-compose build app
 	@docker-compose up -d
@@ -34,6 +35,15 @@ start-d:
 	@echo "Wait on setup database" && sleep 10
 	@docker-compose exec app php artisan migrate
 	@docker-compose exec app php artisan db:seed --class=DatabaseSeeder
+	@docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
+	@docker-compose exec app php artisan queue:restart
+
+quick-start-d:
+	make prepare-nginx
+	@(cp ./${PROJECT_DIR_PATH}/.env.example ./${PROJECT_DIR_PATH}/.env || true)
+	@make prepare-supervisord
+	@docker-compose build app
+	@docker-compose up -d
 	@docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
 	@docker-compose exec app php artisan queue:restart
 
@@ -81,3 +91,6 @@ prepare-supervisord:
 
 	set +ex; \
 	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord/laravel.conf;
+
+root:
+	docker exec -ti --user root ${PROJECT_DIR}-app ${command};
