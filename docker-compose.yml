@@ -5,7 +5,7 @@ services:
     container_name: ${DOCKER_PREFIX}-db
 #    restart: unless-stopped
     ports:
-      - "3306:3306"
+      - ${DB_PORT}:${DB_PORT}
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -25,15 +25,15 @@ services:
       logging:
           driver: none
       ports:
-          - "8025:8025" #http port
-          - "1025:1025" #smtp port
+          - ${MAILHOG_HTTP_PORT}:${MAILHOG_HTTP_PORT} #http port
+          - ${MAILHOG_SMTP_PORT}:${MAILHOG_SMTP_PORT} #smtp port
 
   nginx:
     image: nginx:alpine
     container_name: ${DOCKER_PREFIX}-nginx
     restart: unless-stopped
     ports:
-      - 80:80
+      - ${NGINX_PORT}:${NGINX_PORT}
     volumes:
       - ./${PROJECT_DIR_PATH}:/var/www/${PROJECT_DIR}
       - ./nginx/conf.d/:/etc/nginx/conf.d/

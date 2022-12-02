@@ -23,9 +23,8 @@ RUN apt-get update && apt-get install -y \
     screen
 
 #Install nodejs, npm
-#RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
-#    && apt-get install -y nodejs \
-#    && npm install -g npm \
+RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
+    && apt-get install -y nodejs npm
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
