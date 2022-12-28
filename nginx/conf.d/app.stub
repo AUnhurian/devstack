@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name {PROJECT_NAME}.local
+    server_name {HOSTNAME}
     index index.php index.html;
     error_log  /var/log/nginx/error.log;
     access_log /var/log/nginx/access.log;

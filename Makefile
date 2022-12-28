@@ -27,7 +27,7 @@ create-project:
 
 start-d:
 	make prepare-nginx
-	@(cp ./${PROJECT_DIR_PATH}/.env.example ./${PROJECT_DIR_PATH}/.env || true)
+	@make prepare-env
 	@make prepare-supervisord
 	@docker-compose build app
 	@docker-compose up -d
@@ -40,12 +40,15 @@ start-d:
 
 quick-start-d:
 	make prepare-nginx
-	@(cp ./${PROJECT_DIR_PATH}/.env.example ./${PROJECT_DIR_PATH}/.env || true)
+	@make prepare-env
 	@make prepare-supervisord
 	@docker-compose build app
 	@docker-compose up -d
 	@docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
 	@docker-compose exec app php artisan queue:restart
+
+my-sql:
+	docker-compose exec db mysql -u${DB_USERNAME} -p${DB_PASSWORD}
 
 stop:
 	docker-compose down
@@ -63,9 +66,7 @@ restart:
 
 quick-restart:
 	make stop
-	@(cp ./${PROJECT_DIR_PATH}/.env.example.dist ./${PROJECT_DIR_PATH}/.env || true)
-	@docker-compose build app
-	@docker-compose up -d
+	@make quick-start-d
 
 destroy:
 	docker stop $(docker ps -a -q)
@@ -80,7 +81,13 @@ prepare-nginx:
 		fi;\
 
 	set +ex; \
-	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf
+	if [[ "$OSTYPE" == "darwin"* ]]; then \
+      sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf; \
+	  sed -i "" "s/{HOSTNAME}/${HOSTNAME}/g" ./nginx/conf.d/app.conf; \
+    else \
+      sed -i -e "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./nginx/conf.d/app.conf; \
+      sed -i -e "s/{HOSTNAME}/${HOSTNAME}/g" ./nginx/conf.d/app.conf; \
+    fi
 
 prepare-supervisord:
 	set -ex;\
@@ -90,7 +97,18 @@ prepare-supervisord:
 		fi;\
 
 	set +ex; \
-	sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord/laravel.conf;
+	if [[ "$OSTYPE" == "darwin"* ]]; then \
+	  sed -i "" "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord/laravel.conf; \
+    else \
+	  sed -i -e "s/{PROJECT_NAME}/${PROJECT_DIR}/g" ./supervisord/laravel.conf; \
+    fi
+
+prepare-env:
+	set -ex;\
+    	if [ ! -f ./${PROJECT_DIR_PATH}/.env ]; then \
+			(cp ./${PROJECT_DIR_PATH}/.env.example ./${PROJECT_DIR_PATH}/.env || true) \
+    	fi;\
+	set +ex;
 
 root:
 	docker exec -ti --user root ${PROJECT_DIR}-app ${command};

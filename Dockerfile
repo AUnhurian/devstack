@@ -1,9 +1,9 @@
 ARG PHP_VERSION=8.1
-ARG NODE_VERSION=16
 
 FROM php:$PHP_VERSION-fpm
 
 # Arguments defined in docker-compose.yml
+ARG NODE_VERSION=16
 ARG PROJECT_DIR
 ARG user
 ARG uid
@@ -17,10 +17,12 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     ffmpeg \
-    screen
+    screen \
+    htop
 
 #Install nodejs, npm
 RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
@@ -33,7 +35,7 @@ RUN docker-php-ext-enable xdebug
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

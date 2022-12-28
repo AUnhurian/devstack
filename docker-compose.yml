@@ -47,6 +47,7 @@ services:
         uid: 1000
         PHP_VERSION: ${PHP_VERSION}
         PROJECT_DIR: ${PROJECT_DIR}
+        NODE_VERSION: ${NODE_VERSION}
 #      context: ./${PROJECT_DIR_PATH}
       dockerfile: Dockerfile
       context: .
