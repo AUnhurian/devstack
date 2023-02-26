@@ -22,11 +22,12 @@ RUN apt-get update && apt-get install -y \
     unzip \
     ffmpeg \
     screen \
-    htop
+    htop \
+    pkill
 
 #Install nodejs, npm
 RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
-    && apt-get install -y nodejs npm
+    && apt-get install -y nodejs
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug

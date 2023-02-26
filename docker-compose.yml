@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   db:
-    image: mysql:5.7
+    image: mysql:latest
     container_name: ${DOCKER_PREFIX}-db
 #    restart: unless-stopped
     ports:
@@ -76,7 +76,7 @@ services:
       MAIL_ENCRYPTION: null
       MAIL_FROM_ADDRESS: null
       MAIL_FROM_NAME: ""
-      SESSION_SECURE_COOKIE: "true"
+      SESSION_SECURE_COOKIE: "false"
       SMTP_HOST: "smtp.mailtrap.io"
       SMTP_PORT: "465"
       SMTP_USE_AUTHENTICATION: "true"
