@@ -1,5 +1,18 @@
 # Devstack
 
+## Download
+
+1. You should create a new directory in your project. For example: `devstack`
+2. You should go to this directory in cli mode.
+3. Launch one of the command:
+```
+git clone git@github.com:ELWAHAB/devstack.git .
+
+or
+
+git clone git@gitlab.com:ELWAHAB/devstack.git .
+```
+
 ## Setup Project
 
 1. You should copy `.env.example` in the `.env` file to configure the docker environment.
