@@ -4,7 +4,7 @@
 
 1. You should create a new directory in your project. For example: `devstack`
 2. You should go to this directory in cli mode.
-3. Launch one of the command:
+3. Launch the command:
 ```
 git clone git@github.com:AUnhurian/devstack.git .
 ```
