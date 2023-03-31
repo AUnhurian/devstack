@@ -19,6 +19,20 @@ services:
     networks:
       - app-network
 
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    container_name: ${DOCKER_PREFIX}-cache
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - cache:/data
+    networks:
+      - app-network
+
   mailhog:
       image: mailhog/mailhog:latest
       container_name: ${DOCKER_PREFIX}-mailhog
@@ -27,6 +41,8 @@ services:
       ports:
           - ${MAILHOG_HTTP_PORT}:${MAILHOG_HTTP_PORT} #http port
           - ${MAILHOG_SMTP_PORT}:${MAILHOG_SMTP_PORT} #smtp port
+      networks:
+        - app-network
 
   nginx:
     image: nginx:alpine
@@ -55,6 +71,7 @@ services:
       - db
       - mailhog
       - nginx
+      - cache
     image: laravel-image
     container_name: ${DOCKER_PREFIX}-app
     restart: unless-stopped
@@ -87,6 +104,8 @@ services:
       HOST_HOSTNAME: ${HOSTNAME}
       VIRTUAL_HOST: "${PROJECT_DIR}.local"
       VIRTUAL_PORT: 3000
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
     volumes:
       - ./${PROJECT_DIR_PATH}:/var/www/${PROJECT_DIR}
       - ./supervisord:/etc/supervisor/conf.d/
@@ -98,3 +117,7 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  cache:
+    driver: local
