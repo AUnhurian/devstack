@@ -77,7 +77,6 @@ services:
     restart: unless-stopped
     working_dir: /var/www/${PROJECT_DIR}
     environment:
-      APP_ENV: development
       APP_KEY: ${APP_KEY}
       APP_DEBUG: "true"
       APP_NAME: ${APP_NAME}
