@@ -25,14 +25,18 @@ RUN apt-get update && apt-get install -y \
     htop
 
 #Install nodejs, npm
-RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
-    && apt-get install -y nodejs
+#RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash -
+RUN apt-get install -y npm nodejs
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
 
 RUN pecl install redis
 RUN docker-php-ext-enable redis
+
+#Install Mondodb
+#RUN pecl install mongodb
+#RUN docker-php-ext-enable mongodb
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
