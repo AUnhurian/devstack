@@ -112,3 +112,12 @@ prepare-env:
 
 root:
 	docker exec -ti --user root ${PROJECT_DIR}-app ${command};
+
+supervisor-start:
+	docker exec -ti --user root ${PROJECT_DIR}-app service supervisor start
+
+supervisor-restart:
+	docker exec -ti --user root ${PROJECT_DIR}-app service supervisor restart
+
+supervisor-status:
+	docker exec -ti --user root ${PROJECT_DIR}-app service supervisor status
