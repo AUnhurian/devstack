@@ -72,7 +72,7 @@ services:
       - mailhog
       - nginx
       - cache
-    image: laravel-image
+    image: ${PROJECT_DIR}-app-${PHP_VERSION}
     container_name: ${DOCKER_PREFIX}-app
     restart: unless-stopped
     working_dir: /var/www/${PROJECT_DIR}
