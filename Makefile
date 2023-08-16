@@ -56,6 +56,9 @@ stop:
 bash:
 	docker exec -ti "$(DOCKER_PREFIX)-app" bash
 
+bash-db:
+	docker exec -ti "$(DOCKER_PREFIX)-db" bash
+
 update:
 	docker-compose build app
 	@docker-compose up -d
