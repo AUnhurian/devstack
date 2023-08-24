@@ -26,7 +26,17 @@ RUN apt-get update && apt-get install -y \
 
 #Install nodejs, npm
 #RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash -
-RUN apt-get install -y npm nodejs
+
+#install nodejs of latest version
+#RUN apt-get install -y npm nodejs
+
+#install node js version from .env config
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    npm
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n ${NODE_VERSION}
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
