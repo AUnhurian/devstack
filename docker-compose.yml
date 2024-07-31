@@ -5,7 +5,7 @@ services:
     container_name: ${DOCKER_PREFIX}-db
 #    restart: unless-stopped
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT}:3306
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -72,7 +72,7 @@ services:
       - mailhog
       - nginx
       - cache
-    image: ${PROJECT_DIR}-app-${PHP_VERSION}
+    image: ${DOCKER_PREFIX}-app-${PHP_VERSION}
     container_name: ${DOCKER_PREFIX}-app
     restart: unless-stopped
     working_dir: /var/www/${PROJECT_DIR}
